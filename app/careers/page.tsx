@@ -17,10 +17,13 @@ import {
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import CareerSuccessModal from '@/components/CareerSuccessModal'
+import JobDetailModal from '@/components/JobDetailModal'
 
 const CareersPage = () => {
   const [selectedJob, setSelectedJob] = useState<number | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showJobModal, setShowJobModal] = useState(false)
+  const [selectedJobData, setSelectedJobData] = useState<any>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -192,6 +195,12 @@ const CareersPage = () => {
     }
   }
 
+  const handleJobClick = (job: any) => {
+    console.log('Job clicked:', job.title)
+    setSelectedJobData(job)
+    setShowJobModal(true)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -256,81 +265,73 @@ const CareersPage = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {jobPositions.map((job, index) => (
               <motion.div
                 key={job.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
-                onClick={() => setSelectedJob(selectedJob === job.id ? null : job.id)}
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group focus:outline-none focus:ring-2 focus:ring-primary-500"
+                onClick={() => handleJobClick(job)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleJobClick(job)
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Xem chi tiết vị trí ${job.title}`}
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center">
-                      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mr-4">
+                      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mr-4 group-hover:bg-primary-200 transition-colors">
                         <job.icon className="w-6 h-6 text-primary-600" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900">{job.title}</h3>
+                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">{job.title}</h3>
                         <p className="text-primary-600 font-medium">{job.department}</p>
                       </div>
                     </div>
+                    <div className="text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
 
-                  <p className="text-gray-600 mb-4">{job.description}</p>
+                  <p className="text-gray-600 mb-4 line-clamp-2">{job.description}</p>
 
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     <div className="flex items-center text-sm text-gray-500">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      {job.location}
+                      <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">{job.location}</span>
                     </div>
                     <div className="flex items-center text-sm text-gray-500">
-                      <Clock className="w-4 h-4 mr-2" />
+                      <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
                       {job.type}
                     </div>
                     <div className="flex items-center text-sm text-gray-500">
-                      <DollarSign className="w-4 h-4 mr-2" />
-                      {job.salary}
+                      <DollarSign className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="font-semibold text-green-600">{job.salary}</span>
                     </div>
                     <div className="flex items-center text-sm text-gray-500">
-                      <Briefcase className="w-4 h-4 mr-2" />
+                      <Briefcase className="w-4 h-4 mr-2 flex-shrink-0" />
                       {job.experience}
                     </div>
                   </div>
 
-                  {selectedJob === job.id && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="border-t pt-4"
-                    >
-                      <div className="mb-4">
-                        <h4 className="font-semibold text-gray-900 mb-2">Yêu cầu:</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {job.requirements.map((req, idx) => (
-                            <li key={idx} className="flex items-start">
-                              <div className="w-1.5 h-1.5 bg-primary-600 rounded-full mr-2 mt-2"></div>
-                              {req}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="mb-4">
-                        <h4 className="font-semibold text-gray-900 mb-2">Trách nhiệm:</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {job.responsibilities.map((resp, idx) => (
-                            <li key={idx} className="flex items-start">
-                              <div className="w-1.5 h-1.5 bg-primary-600 rounded-full mr-2 mt-2"></div>
-                              {resp}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </motion.div>
-                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-primary-600 font-medium">Xem chi tiết</span>
+                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                      <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -356,6 +357,7 @@ const CareersPage = () => {
           </motion.div>
 
           <motion.div
+            id="application-form"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -371,7 +373,7 @@ const CareersPage = () => {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="Nhập họ và tên"
                     required
                   />
@@ -384,7 +386,7 @@ const CareersPage = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="example@email.com"
                     required
                   />
@@ -400,7 +402,7 @@ const CareersPage = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="+84 xxx xxx xxx"
                   />
                 </div>
@@ -411,7 +413,7 @@ const CareersPage = () => {
                   <select
                     value={formData.position}
                     onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900"
                     required
                   >
                     <option value="">Chọn vị trí</option>
@@ -430,7 +432,7 @@ const CareersPage = () => {
                   value={formData.experience}
                   onChange={(e) => setFormData(prev => ({ ...prev, experience: e.target.value }))}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                   placeholder="Mô tả kinh nghiệm làm việc của bạn..."
                 />
               </div>
@@ -443,7 +445,7 @@ const CareersPage = () => {
                   type="file"
                   onChange={handleFileChange}
                   accept=".pdf,.doc,.docx"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                 />
                 <p className="text-sm text-gray-500 mt-1">Chấp nhận file PDF, DOC, DOCX (tối đa 5MB)</p>
               </div>
@@ -456,7 +458,7 @@ const CareersPage = () => {
                   value={formData.message}
                   onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                   placeholder="Giới thiệu về bản thân, lý do ứng tuyển, portfolio, GitHub, LinkedIn..."
                 />
               </div>
@@ -547,6 +549,16 @@ const CareersPage = () => {
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
         position={formData.position}
+      />
+
+      <JobDetailModal
+        job={selectedJobData}
+        isOpen={showJobModal}
+        onClose={() => {
+          console.log('Closing modal')
+          setShowJobModal(false)
+          setSelectedJobData(null)
+        }}
       />
     </div>
   )

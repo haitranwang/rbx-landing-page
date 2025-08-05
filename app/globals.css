@@ -35,6 +35,39 @@ body {
   }
 }
 
+/* Form field styles */
+@layer components {
+  input, textarea, select {
+    background-color: white !important;
+    color: #111827 !important; /* text-gray-900 */
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #6b7280 !important; /* text-gray-500 */
+  }
+
+  /* File input styling */
+  input[type="file"] {
+    background-color: white !important;
+    color: #111827 !important;
+  }
+
+  input[type="file"]::-webkit-file-upload-button {
+    background-color: #dbeafe !important; /* bg-primary-50 */
+    color: #2563eb !important; /* text-primary-700 */
+    border: none;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-right: 1rem;
+  }
+
+  input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #bfdbfe !important; /* bg-primary-100 */
+  }
+}
+
 /* Animation classes */
 @keyframes blob {
   0% {
